@@ -12,6 +12,7 @@ contract YourContract {
     struct Todo {
         string text;
         bool completed;
+        bool isPremium;
     }
 
     Todo[] public todos;
@@ -35,15 +36,22 @@ contract YourContract {
     function get(uint256 _index)
         public
         view
-        returns (string memory text, bool completed)
+        returns (
+            string memory text,
+            bool completed,
+            bool isPremium
+        )
     {
         Todo storage todo = todos[_index];
-        return (todo.text, todo.completed);
+        return (todo.text, todo.completed, todo.isPremium);
     }
 
     function create(string calldata _text) public payable {
         require(msg.value >= 0.01 ether);
-        todos.push(Todo(_text, false));
+        if (msg.value >= 1 ether) {
+            todos.push(Todo(_text, false, true));
+        }
+        todos.push(Todo(_text, false, false));
     }
 
     function toggleCompleted(uint256 _index) public {
